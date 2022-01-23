@@ -1,0 +1,16 @@
+slapd	slapd/internal/adminpw	password	
+slapd	slapd/internal/generated_adminpw	password	
+slapd	slapd/password2	password	
+slapd	slapd/password1	password	
+slapd	slapd/unsafe_selfwrite_acl	note	
+slapd	slapd/domain	string	local
+slapd	slapd/invalid_config	boolean	true
+slapd	slapd/purge_database	boolean	false
+slapd	slapd/dump_database_destdir	string	/var/backups/slapd-VERSION
+slapd	slapd/ppolicy_schema_needs_update	select	abort installation
+slapd	shared/organization	string	local
+slapd	slapd/no_configuration	boolean	false
+slapd	slapd/move_old_database	boolean	true
+slapd	slapd/dump_database	select	when needed
+slapd	slapd/upgrade_slapcat_failure	error	
+slapd	slapd/password_mismatch	note	

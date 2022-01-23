@@ -1,0 +1,80 @@
+version: '3.6'
+
+services:
+
+  named:
+    image: ubuntu/bind9
+    restart: unless-stopped
+    ports: 
+      - 53:53/udp
+    volumes:
+      - "./named/etc:/etc/bind"
+      - "./named/var_cache:/var/cache/bind"
+      - "./named/var_lib:/var/lib/bind"
+      - "./named/log:/var/log"
+
+  cncjs:
+    build: ./cncjs
+    restart: unless-stopped
+    ports:
+      - 8000:8000
+
+  webcam:
+    build: webcam
+    restart: unless-stopped
+    devices:
+      - /dev/video0:/dev/video0
+      - /dev/video1:/dev/video1
+
+#  octoprint:
+#    image: octoprint/octoprint:latest
+#    restart: unless-stopped
+#    ports:
+#      - 5000:5000
+#    devices:
+#      - /dev/ttyACM0:/dev/ttyACM0
+##  - /dev/ttyUSB1:/dev/ttyUSB1
+#    volumes:
+#      - ./octoprint/:/octoprint/:rw
+
+  nginx:
+    image: nginx:latest
+    restart: unless-stopped
+    depends_on:
+      - webcam
+#      - octoprint
+      - cncjs
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./nginx/etc/:/etc/nginx/:rw
+      - ./nginx/html/:/usr/share/nginx/html:ro
+      - ./nginx/log/:/var/log/nginx:rw
+      - ./nginx/var/:/var/lib/nginx/:rw
+
+  ldap:
+    build: ldap
+    hostname: ldap.local
+    restart: unless-stopped
+    ports:
+      - 636:636
+      - 389:389
+
+  ssh:
+    build: sshd
+    restart: unless-stopped
+    ports:
+      - "8022:22"
+
+  homeassistant:
+    image: homeassistant/raspberrypi4-homeassistant:stable
+    privileged: true
+    network_mode: host
+    volumes:
+      - ./homeassistant/config:/config
+      - hass_media:/media
+      - /etc/localtime:/etc/localtime:ro
+
+volumes:
+  hass_media:
